@@ -1,0 +1,300 @@
+/* ═══ MACRO DASHBOARD ═══════════════════════════════════════
+   Shared styles for MacroDashContent + MacroDashExchange
+   Factoid tiles · bubble chart · genre waveforms · viewing habits
+   · geo heatmap · sankey
+*/
+
+.macro-dash {
+  display: flex; flex-direction: column; gap: 18px;
+  margin-bottom: 22px;
+}
+
+/* ─── Factoid tiles ───────────────────────────────────────── */
+.macro-facts {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+.macro-facts.four { grid-template-columns: repeat(4, 1fr); }
+
+.macro-fact {
+  --tile-accent: var(--gold);
+  position: relative;
+  text-align: left;
+  padding: 16px 18px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--tile-accent);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s var(--ease);
+  overflow: hidden;
+}
+.macro-fact::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--tile-accent) 0%, transparent 35%);
+  opacity: 0.025; pointer-events: none;
+}
+.macro-fact:hover {
+  border-color: var(--border-md);
+  background: var(--surface-2, rgba(255,255,255,0.02));
+}
+.macro-fact.active {
+  border-color: var(--tile-accent);
+}
+.macro-fact.gold    { --tile-accent: var(--gold); }
+.macro-fact.green   { --tile-accent: var(--green); }
+.macro-fact.red     { --tile-accent: var(--red); }
+.macro-fact.purple  { --tile-accent: var(--purple); }
+.macro-fact.blue    { --tile-accent: var(--cyan); }
+
+.macro-fact-label {
+  font-family: var(--label);
+  font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  color: var(--text-muted); text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.macro-fact-value {
+  font-family: var(--display);
+  font-size: 32px; letter-spacing: 1.5px;
+  color: var(--tile-accent);
+  line-height: 1; margin-bottom: 8px;
+}
+.macro-fact-row {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 10px;
+}
+.macro-fact-delta {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
+  flex-shrink: 0;
+}
+.macro-fact-delta.up    { color: var(--green); }
+.macro-fact-delta.down  { color: var(--red); }
+.macro-fact-delta.flat  { color: var(--text-muted); }
+.macro-fact-foot {
+  font-family: var(--body); font-size: 10px;
+  color: var(--text-dim); line-height: 1.3;
+}
+
+/* ─── Grid layouts ────────────────────────────────────────── */
+.macro-grid-2 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+}
+
+/* ─── Genre legend chips ──────────────────────────────────── */
+.genre-legend {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.genre-chip {
+  --chip-color: var(--gold);
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--label); font-size: 9px; font-weight: 700;
+  letter-spacing: 2px; color: var(--text-bright);
+  padding: 4px 8px;
+  background: transparent; border: 1px solid var(--border);
+  cursor: pointer; transition: all .15s;
+}
+.genre-chip i {
+  width: 7px; height: 7px; display: inline-block;
+}
+.genre-chip.static { cursor: default; }
+.genre-chip:hover, .genre-chip.active {
+  border-color: var(--chip-color);
+  color: var(--chip-color);
+}
+.genre-chip.dim { opacity: 0.35; }
+
+/* ─── Bubble chart ────────────────────────────────────────── */
+.bubble-wrap {
+  position: relative;
+}
+.bubble-tip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 12px));
+  background: #0a0818;
+  border: 1px solid var(--border-md);
+  padding: 8px 12px;
+  pointer-events: none;
+  min-width: 140px;
+  z-index: 10;
+}
+.bubble-tip::after {
+  content: '';
+  position: absolute;
+  bottom: -6px; left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px; height: 10px;
+  background: #0a0818;
+  border-right: 1px solid var(--border-md);
+  border-bottom: 1px solid var(--border-md);
+}
+.bubble-tip-title {
+  font-family: var(--body); font-size: 12px; font-weight: 600;
+  color: var(--white);
+  margin-bottom: 3px;
+}
+.bubble-tip-row {
+  font-family: var(--body); font-size: 10px;
+  color: var(--text-dim);
+}
+.bubble-tip-row .mono { font-family: var(--mono); }
+
+.bubble-foot {
+  display: flex; justify-content: space-between;
+  padding: 6px 20px 12px;
+  font-family: var(--label); font-size: 9px; letter-spacing: 2px;
+  color: var(--text-muted); text-transform: uppercase;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── Genre trends (Market Watch style) ────────────────────── */
+.genre-trends {
+  display: flex; flex-direction: column;
+}
+.genre-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 120px 70px 70px;
+  gap: 10px; align-items: center;
+  padding: 10px 16px;
+  background: transparent;
+  border: none; border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+  text-align: left;
+}
+.genre-row:last-child { border-bottom: none; }
+.genre-row:hover { background: rgba(255,255,255,0.02); }
+.genre-row.active { background: rgba(255,255,255,0.04); }
+.genre-row.dim { opacity: 0.4; }
+
+.genre-rank {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text-muted); letter-spacing: 1px;
+}
+.genre-name {
+  font-family: var(--body); font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 7px;
+}
+.genre-dot {
+  width: 8px; height: 8px; display: inline-block;
+}
+.genre-spark { display: block; }
+.genre-share {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--white); letter-spacing: 1px; text-align: right;
+}
+.genre-delta {
+  font-family: var(--mono); font-size: 11px;
+  text-align: right; letter-spacing: 1px;
+}
+.genre-delta.up    { color: var(--green); }
+.genre-delta.down  { color: var(--red); }
+.genre-delta.flat  { color: var(--text-muted); }
+
+/* ─── Viewing habits stacked ──────────────────────────────── */
+.viewing-habits {
+  padding: 16px 20px 20px;
+}
+.viewing-legend {
+  display: flex; gap: 14px; margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.vh-leg {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--label); font-size: 9px; font-weight: 700;
+  letter-spacing: 2px; color: var(--text-dim);
+}
+.vh-leg i {
+  width: 10px; height: 10px; display: inline-block;
+}
+.vh-rows {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.vh-row {
+  display: grid; grid-template-columns: 80px 1fr;
+  gap: 12px; align-items: center;
+}
+.vh-demo {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text-bright); letter-spacing: 2px;
+}
+.vh-bar {
+  display: flex; height: 22px;
+  background: rgba(255,255,255,0.04);
+}
+.vh-seg {
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  color: #000; letter-spacing: 0.5px;
+  opacity: 0.88;
+  transition: all .2s;
+}
+.vh-seg:hover { opacity: 1; filter: brightness(1.2); }
+
+/* ─── Geo heatmap ─────────────────────────────────────────── */
+.geo-heat {
+  position: relative;
+}
+.geo-legend {
+  display: flex; gap: 10px; align-items: center;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.geo-legend-label {
+  font-family: var(--label); font-size: 9px; font-weight: 700;
+  letter-spacing: 2px; color: var(--text-muted);
+  margin-right: auto;
+}
+.geo-legend-item {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--mono); font-size: 9px;
+  color: var(--text-dim); letter-spacing: 1px;
+}
+.geo-legend-item i {
+  width: 10px; height: 10px; display: inline-block;
+}
+.geo-tip {
+  position: absolute; top: 14px; right: 14px;
+  padding: 8px 12px;
+  background: rgba(10,8,24,0.92);
+  border: 1px solid var(--border-md);
+  min-width: 160px;
+  pointer-events: none;
+}
+.geo-tip-title {
+  font-family: var(--body); font-size: 12px; font-weight: 600;
+  color: var(--white); margin-bottom: 5px;
+}
+.geo-tip-row {
+  font-family: var(--body); font-size: 10px;
+  color: var(--text-dim);
+}
+.geo-tip-row b {
+  font-family: var(--mono); color: var(--gold);
+  font-weight: normal; letter-spacing: 1px;
+}
+
+/* ─── Sankey ──────────────────────────────────────────────── */
+.sankey-wrap {
+  position: relative;
+}
+
+/* ─── Responsive ──────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .macro-facts { grid-template-columns: repeat(3, 1fr); }
+  .macro-facts.four { grid-template-columns: repeat(2, 1fr); }
+  .macro-grid-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .macro-facts { grid-template-columns: repeat(2, 1fr); }
+  .macro-facts.four { grid-template-columns: 1fr; }
+  .genre-row { grid-template-columns: 24px 1fr 60px; }
+  .genre-row .genre-spark { display: none; }
+  .vh-row { grid-template-columns: 60px 1fr; }
+}
