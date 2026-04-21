@@ -98,19 +98,63 @@ function RailCredits({ tmdb }) {
   const creators = (tmdb.created_by || []).map(c => ({ name: c.name, role: c.job || 'Creator' }));
   const cast = (tmdb.credits && tmdb.credits.cast) || [];
   const crew = (tmdb.credits && tmdb.credits.crew) || [];
+  const isMovie = tmdb.media_type === 'movie';
+  const sentiment = tmdb.sentiment;
+
   return React.createElement('div', { className: 'pr-rail-body' },
-    React.createElement('div', { className: 'pr-rail-row' },
-      React.createElement('span', { className: 'pr-rail-row-label' }, 'Studio'),
-      React.createElement('span', { className: 'pr-rail-row-val' },
-        (tmdb.production_companies || []).slice(0, 2).map(p => p.name).join(' · '))
-    ),
+    // ── METADATA ─────────────────────────────────────────
     React.createElement('div', { className: 'pr-rail-row' },
       React.createElement('span', { className: 'pr-rail-row-label' }, 'Network'),
       React.createElement('span', { className: 'pr-rail-row-val accent' },
         (tmdb.networks || [{name: '—'}])[0].name)
     ),
-    creators.length > 0 && React.createElement('div', { style: { marginTop: 16 } },
-      React.createElement('div', { className: 'pr-stream-row-label' }, 'Created by'),
+    React.createElement('div', { className: 'pr-rail-row' },
+      React.createElement('span', { className: 'pr-rail-row-label' }, 'Status'),
+      React.createElement('span', { className: 'pr-rail-row-val' }, tmdb.status || '—')
+    ),
+    React.createElement('div', { className: 'pr-rail-row' },
+      React.createElement('span', { className: 'pr-rail-row-label' }, 'Type'),
+      React.createElement('span', { className: 'pr-rail-row-val' }, isMovie ? 'Movie' : 'TV Series')
+    ),
+    tmdb.original_language && React.createElement('div', { className: 'pr-rail-row' },
+      React.createElement('span', { className: 'pr-rail-row-label' }, 'Language'),
+      React.createElement('span', { className: 'pr-rail-row-val' }, tmdb.original_language.toUpperCase())
+    ),
+    tmdb.origin_country && tmdb.origin_country.length > 0 && React.createElement('div', { className: 'pr-rail-row' },
+      React.createElement('span', { className: 'pr-rail-row-label' }, 'Country'),
+      React.createElement('span', { className: 'pr-rail-row-val' }, tmdb.origin_country.join(', '))
+    ),
+    tmdb.certification && React.createElement('div', { className: 'pr-rail-row' },
+      React.createElement('span', { className: 'pr-rail-row-label' }, 'Rating'),
+      React.createElement('span', { className: 'pr-rail-row-val' }, tmdb.certification)
+    ),
+    // ── SENTIMENT ────────────────────────────────────────
+    sentiment && React.createElement('div', { style: { marginTop: 14 } },
+      React.createElement('div', { className: 'pr-stream-row-label' },
+        'Audience Sentiment · ', sentiment.score, '/100  ', sentiment.label),
+      React.createElement('div', {
+        style: { height: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 3, margin: '6px 0 8px', overflow: 'hidden' }
+      },
+        React.createElement('div', { style: {
+          height: '100%', width: `${sentiment.score}%`,
+          background: 'linear-gradient(90deg, var(--pr-accent), #39d98a)', borderRadius: 3
+        }})
+      ),
+      React.createElement('div', { className: 'pr-chips' },
+        sentiment.tags.map((t, i) =>
+          React.createElement('span', { key: i, className: i === 0 ? 'pr-chip accent' : 'pr-chip' }, t)
+        )
+      )
+    ),
+    // ── STUDIO ───────────────────────────────────────────
+    React.createElement('div', { className: 'pr-rail-row', style: { marginTop: 12 } },
+      React.createElement('span', { className: 'pr-rail-row-label' }, 'Studio'),
+      React.createElement('span', { className: 'pr-rail-row-val' },
+        (tmdb.production_companies || []).slice(0, 2).map(p => p.name).join(' · '))
+    ),
+    // ── CREATORS / CAST / CREW ───────────────────────────
+    creators.length > 0 && React.createElement('div', { style: { marginTop: 14 } },
+      React.createElement('div', { className: 'pr-stream-row-label' }, isMovie ? 'Director' : 'Created by'),
       creators.map((c, i) => React.createElement('div', { key: i, className: 'pr-credit-item' },
         React.createElement('span', { className: 'pr-credit-name' }, c.name),
         React.createElement('span', { className: 'pr-credit-role' }, c.role)
@@ -118,24 +162,18 @@ function RailCredits({ tmdb }) {
     ),
     cast.length > 0 && React.createElement('div', { style: { marginTop: 14 } },
       React.createElement('div', { className: 'pr-stream-row-label' }, 'Starring'),
-      cast.slice(0, 5).map((c, i) => React.createElement('div', { key: i, className: 'pr-credit-item' },
+      cast.slice(0, 4).map((c, i) => React.createElement('div', { key: i, className: 'pr-credit-item' },
         React.createElement('span', { className: 'pr-credit-name' }, c.name),
         React.createElement('span', { className: 'pr-credit-role' }, c.character)
       ))
     ),
-    crew.length > 0 && React.createElement('div', { style: { marginTop: 14 } },
-      React.createElement('div', { className: 'pr-stream-row-label' }, 'Key Crew'),
-      crew.slice(0, 3).map((c, i) => React.createElement('div', { key: i, className: 'pr-credit-item' },
-        React.createElement('span', { className: 'pr-credit-name' }, c.name),
-        React.createElement('span', { className: 'pr-credit-role' }, c.job)
-      ))
-    ),
+    // ── KEYWORDS ─────────────────────────────────────────
     React.createElement('div', { style: { marginTop: 16 } },
       React.createElement('div', { className: 'pr-stream-row-label' }, 'Keywords'),
       React.createElement('div', { className: 'pr-chips' },
-        (tmdb.keywords || []).slice(0, 10).map((k, i) => React.createElement('span', {
-          key: i, className: i < 3 ? 'pr-chip accent' : 'pr-chip'
-        }, k))
+        (tmdb.keywords || []).slice(0, 8).map((k, i) =>
+          React.createElement('span', { key: i, className: i < 2 ? 'pr-chip accent' : 'pr-chip' }, k)
+        )
       )
     )
   );

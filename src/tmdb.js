@@ -427,6 +427,23 @@ const TMDB_RECORDS = {
     backdrop_url: 'assets/rpo-backdrop.jpg',
     poster_url:   'https://image.tmdb.org/t/p/w500/pU1ULUq8D3iRxl1fdX2lZIzdHuI.jpg',
     trailer: { key: 'cSp1dM2Vj48', site: 'YouTube', url: 'https://www.youtube.com/watch?v=cSp1dM2Vj48' },
+    original_language: 'en',
+    origin_country: ['United States'],
+    sentiment: { score: 82, label: 'Positive', tags: ['nostalgic', 'family-friendly', 'action-packed', 'visual spectacle'] },
+    rights: {
+      deal_name: 'TNT Saturday Movies: Ready Player One Package',
+      holder: 'Warner Bros. Discovery',
+      licensor: 'Warner Bros. Pictures',
+      acq_date: '2024-01-15',
+      start_date: '2024-03-01',
+      end_date: '2026-12-31',
+      remaining_runs: 8,
+      total_runs: 24,
+      exclusivity: 'Cable First',
+      window_type: 'Linear + TVEverywhere',
+      est_license_value: 14_500_000,
+      renewal_signal: 'HIGH',
+    },
   },
 };
 

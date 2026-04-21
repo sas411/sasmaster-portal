@@ -206,7 +206,7 @@ function ContentPortal() {
     tab === 'rights' && React.createElement(RightsCatalog, { onOpen: setOpenProgram }),
 
     // ── PROGRAM DETAIL MODAL ──────────────────────────────
-    openProgram && React.createElement(ProgramDetail, { program: openProgram, onClose: () => setOpenProgram(null) })
+    openProgram && React.createElement(window.ProgramRoute, { program: openProgram, onClose: () => setOpenProgram(null) })
   );
 }
 
@@ -632,40 +632,51 @@ function ProgramDetail({ program, onClose }) {
 
 function RightsTab({ program, availableStream, availablePurchase }) {
   const seed = program.rank || 1;
+  const tmdb = window.SASMASTER_TMDB && window.SASMASTER_TMDB.getTMDB(program.rank);
+  const r = tmdb && tmdb.rights;
+  const fmtM = (n) => n ? '$' + (n >= 1e6 ? (n/1e6).toFixed(1)+'M' : (n/1e3).toFixed(0)+'K') : '—';
+
+  const dealRows = [
+    ['Deal Name',        r ? r.deal_name   : `${program.title} · ${dealKind(seed)}`],
+    ['Rights Holder',    r ? r.holder       : 'Warner Bros. Discovery'],
+    ['Licensor',         r ? r.licensor     : 'Oakhurst Studios'],
+    ['Acquisition Date', r ? r.acq_date     : '2024-01-15'],
+    ['Start Date',       r ? r.start_date   : '2026-01-01'],
+    ['End Date',         r ? r.end_date     : '2028-12-31'],
+    ['Remaining Runs',   r ? `${r.remaining_runs} of ${r.total_runs}` : `${25 + seed * 3} of unlimited`],
+    ['Exclusivity',      r ? r.exclusivity  : 'Cable First'],
+    ['Window Type',      r ? r.window_type  : dealKind(seed)],
+    ['Est. License Value', r ? fmtM(r.est_license_value) : `$${(1 + seed * 0.7).toFixed(1)}M`],
+    ['Renewal Signal',   r ? r.renewal_signal : (seed <= 6 ? 'HIGH' : 'MED')],
+  ];
+
+  const renewalStyle = (val) => {
+    if (val === 'HIGH') return { color: 'var(--green, #39d98a)', fontWeight: 700 };
+    if (val === 'MED')  return { color: 'var(--gold, #f0c040)', fontWeight: 700 };
+    return { color: 'var(--red, #ff4d6a)', fontWeight: 700 };
+  };
+
   return React.createElement('div', { className: 'rights-pane' },
-    // Deal sheet
     React.createElement('div', { className: 'deal-sheet' },
       React.createElement('div', { className: 'deal-sheet-head' },
         React.createElement('span', { className: 'deal-sheet-label' }, 'RSG RIGHTS'),
         React.createElement('span', { className: 'deal-sheet-tag' }, 'MARKET WATCH ▶')),
       React.createElement('table', { className: 'deal-table' },
         React.createElement('tbody', null,
-          React.createElement('tr', null,
-            React.createElement('td', null, 'Deal Name:'),
-            React.createElement('td', null, program.title, ' · ', dealKind(seed))),
-          React.createElement('tr', null,
-            React.createElement('td', null, 'Deal Type:'),
-            React.createElement('td', null, dealKind(seed))),
-          React.createElement('tr', null,
-            React.createElement('td', null, 'Rights Summary:'),
-            React.createElement('td', null, 'Linear · TVEverywhere · SVOD ' + (seed % 2 ? '+ AVOD' : ''))),
-          React.createElement('tr', null,
-            React.createElement('td', null, 'Acquisition Cost:'),
-            React.createElement('td', null, '$', (1 + seed * 0.7).toFixed(1), 'M')),
-          React.createElement('tr', null,
-            React.createElement('td', null, 'Exhibition Window:'),
-            React.createElement('td', null, '1/1/2026 – 12/31/2028')),
-          React.createElement('tr', null,
-            React.createElement('td', null, 'Total Runs:'),
-            React.createElement('td', null, 25 + seed * 3)),
-          React.createElement('tr', null,
-            React.createElement('td', null, 'Remaining Runs:'),
-            React.createElement('td', null, 'Unlimited'))
+          dealRows.map(([label, value], i) =>
+            React.createElement('tr', { key: i },
+              React.createElement('td', null, label + ':'),
+              React.createElement('td', null,
+                label === 'Renewal Signal'
+                  ? React.createElement('span', { style: renewalStyle(value) }, '● ', value)
+                  : value
+              )
+            )
+          )
         )
       )
     ),
 
-    // Streaming availability
     React.createElement('div', { className: 'avail-block' },
       React.createElement('div', { className: 'avail-head' },
         React.createElement('span', { className: 'deal-sheet-label' }, 'STREAMING AVAILABILITY'),
@@ -673,7 +684,7 @@ function RightsTab({ program, availableStream, availablePurchase }) {
       React.createElement('div', { className: 'avail-row' },
         React.createElement('div', { className: 'avail-row-l' }, 'STREAM'),
         React.createElement('div', { className: 'avail-tiles' },
-          availableStream.map((p, i) => React.createElement('div', { key: i, className: 'stream-tile',
+          (availableStream || []).map((p, i) => React.createElement('div', { key: i, className: 'stream-tile',
             style: { background: `linear-gradient(135deg, ${p.c1}, ${p.c2})` }
           }, React.createElement('span', null, p.name)))
         )
@@ -681,7 +692,7 @@ function RightsTab({ program, availableStream, availablePurchase }) {
       React.createElement('div', { className: 'avail-row' },
         React.createElement('div', { className: 'avail-row-l' }, 'RENT'),
         React.createElement('div', { className: 'avail-tiles' },
-          availablePurchase.slice(0, 4).map((p, i) => React.createElement('div', { key: i, className: 'stream-tile',
+          (availablePurchase || []).slice(0, 4).map((p, i) => React.createElement('div', { key: i, className: 'stream-tile',
             style: { background: `linear-gradient(135deg, ${p.c1}, ${p.c2})` }
           }, React.createElement('span', null, p.name)))
         )
@@ -689,7 +700,7 @@ function RightsTab({ program, availableStream, availablePurchase }) {
       React.createElement('div', { className: 'avail-row' },
         React.createElement('div', { className: 'avail-row-l' }, 'BUY'),
         React.createElement('div', { className: 'avail-tiles' },
-          availablePurchase.slice(2, 6).map((p, i) => React.createElement('div', { key: i, className: 'stream-tile',
+          (availablePurchase || []).slice(2, 6).map((p, i) => React.createElement('div', { key: i, className: 'stream-tile',
             style: { background: `linear-gradient(135deg, ${p.c1}, ${p.c2})` }
           }, React.createElement('span', null, p.name)))
         )
@@ -752,4 +763,4 @@ function AudienceTab({ program }) {
   );
 }
 
-Object.assign(window, { ContentPortal, AdvertisingPortal, MarketingPortal, CPGPortal, ExchangePortal, ScheduleGrid, RightsCatalog, ProgramDetail });
+Object.assign(window, { ContentPortal, AdvertisingPortal, MarketingPortal, CPGPortal, ExchangePortal, ScheduleGrid, RightsCatalog, ProgramDetail, RightsTab, PerfTab, AudienceTab });

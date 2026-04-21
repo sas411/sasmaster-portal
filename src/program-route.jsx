@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 const RAIL_DEFS = [
-  { key: 'credits',    label: 'CAST · CREW · CREDITS',  C: 'PR_RailCredits' },
+  { key: 'credits',    label: 'METADATA · NETWORK · CAST',  C: 'PR_RailCredits' },
   { key: 'financials', label: 'FINANCIALS · DEAL',      C: 'PR_RailFinancials' },
   { key: 'awards',     label: 'AWARDS · ACCOLADES',     C: 'PR_RailAwards' },
   { key: 'streaming',  label: 'STREAMING AVAILABILITY', C: 'PR_RailStreaming' },

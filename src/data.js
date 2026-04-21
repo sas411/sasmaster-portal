@@ -41,6 +41,7 @@ const PROGRAMS = [
   { rank: 10, title: 'THE OVERNIGHT',                network: 'TNT',    genre: 'Thriller',       rating: 0.89, delta:  -0.8, reach: '4.8M',  demo: 'A25-54',  ep: 'S01E12' },
   { rank: 11, title: 'HIDDEN PROVINCE',              network: 'BRAVO',  genre: 'Reality',        rating: 0.84, delta: +11.2, reach: '4.3M',  demo: 'W18-49',  ep: 'S09E05' },
   { rank: 12, title: 'COAST TO COAST: DINERS',       network: 'FOOD',   genre: 'Lifestyle',      rating: 0.76, delta:  +1.8, reach: '3.9M',  demo: 'A25-54',  ep: 'S14E08' },
+  { rank: 13, title: 'TNT SATURDAY MOVIES: READY PLAYER ONE', network: 'TNT', genre: 'Movie', rating: 0.72, delta: +15.8, reach: '4.1M', demo: 'A18-49', ep: 'MOVIE' },
 ];
 
 // Weekly ratings trend (last 14 weeks, indexed 100 = base)
