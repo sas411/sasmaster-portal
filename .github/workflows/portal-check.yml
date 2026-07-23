@@ -1,0 +1,50 @@
+name: portal-check
+
+on:
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  html-validate:
+    name: HTML validation (report-only)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run html-validate on index.html
+        continue-on-error: true
+        run: npx --yes html-validate index.html
+
+      - name: Check for broken relative asset links
+        continue-on-error: true
+        run: |
+          echo "Scanning index.html and src/ for relative asset references..."
+          status=0
+          # Extract relative href/src attribute values (skip http(s), //, mailto:, #, data:)
+          refs=$(grep -Eo '(href|src)=["'"'"']([^"'"'"']+)["'"'"']' index.html src/*.html 2>/dev/null \
+            | sed -E 's/^[^:]+:(href|src)=["'"'"']//; s/["'"'"']$//' \
+            | grep -Ev '^(https?:)?//|^mailto:|^#|^data:' || true)
+          if [ -z "$refs" ]; then
+            echo "No relative asset references found to check."
+            exit 0
+          fi
+          while IFS= read -r ref; do
+            [ -z "$ref" ] && continue
+            clean_ref="${ref%%\?*}"
+            clean_ref="${clean_ref%%#*}"
+            if [ ! -e "$clean_ref" ]; then
+              echo "::warning::Possible broken relative asset link: $ref"
+              status=1
+            fi
+          done <<< "$refs"
+          if [ "$status" -ne 0 ]; then
+            echo "One or more relative asset links could not be resolved (report-only, not failing build)."
+          else
+            echo "All relative asset links resolved."
+          fi
